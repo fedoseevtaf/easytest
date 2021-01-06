@@ -6,32 +6,37 @@ def none(*args, **keyargs):
     return None
 
 
-# Класс для тестирования функций по кейсам тестирования
+# Класс нужен для объединения кейсов тестированя в один объект
 class test():
-    # Метод для инициализации нового стэка кейсов тестирования функции по ней
+    
+    # Метод используется для создания нового набота кейсов тестирования функции
     def __init__(self, func, *skipArgs , **skipKeyargs):
-        # Защита от пользователей неправильно задающих аргументы
+        
+        # Для защиты от некорректных аргументов функция обёрнута в тесты типов
         errorTest1 = type(func) != type(none)
         if not errorTest1:
 
             # Чистая функция создания нового теста
-            test__init__(self, func, message)
-            
-        else:
+            test__init__(self, func)
+
+        # Вызов ошибок при некорректных аргументах
+        elif errorTeat1:
             errorMessage = 'Type of test function is not function!'
             raise TypeError(errorMessage)
             
 
-    # Метод для добавления нового кейса тестирования 
+    # Метод используется для добавления кейса тестирования
     def case(self, inputData = (0, {}), outputData = 0, *skipArgs, sep = 0, **skipKeyargs):
-        # Защита от пользователей неправильно задающих аргументы
+        
+        # Для защиты от некорректных аргументов функция обёрнута в тесты
         errorTest1 = type(inputData) not in {tuple, list}
         errorTest2 = type(sep) != (int)
         if (not errorTest1) and (not errorTest2):
 
-            # Чистая функция создания в тесте кейса тестирования
+            # Чистая функция создания кейса тестирования
             testcase(self, inputData, outputData, sep)
 
+        # Вызов ошибок при некорректных аргументах
         elif errorTest1:
             errorMessage = 'Type of case input data is not tuple or list!'
             raise TypeError(errorMessage)
@@ -41,17 +46,18 @@ class test():
             
     # Метод для выполнения кейсов тестирования из теста
     def todo(self, *skipArgs, **skipKeyargs):
-        # Заготовка под будующие аргументы
+        
         if True:
 
             # Чистая функция для выполнения кейсов
             testtodo(self)
 
-        else:
+        elif True:
             pass
 
 
-# Чистые функции без защиты от неправильных аргументов
+# Чистые функции без защиты от некорректных аргументов
+# Они предназначены для работы с тестами
 # !!! НЕ ТРОГАТЬ ЭТИ ФУНКЦИИ !!!
 # !!! DON'T TOUCH THIS FUNCTIONS !!!
 def test__init__(self, func):
