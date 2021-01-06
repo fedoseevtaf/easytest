@@ -1,1 +1,111 @@
+Основной класс - test. Экземпляр класса test - объект объединяющий кейсы тестирования одной функции. Кейс тестирования не является объектом инкапсулирующим методы , а является набром входных и верных выходных данных функции.
 
+Метод __init__ -
+Метод для инициализации нового теста.
+№	|Имя аргумента	|Позиция	|Стандартное значение	|Назначение		|
+________|_______________|_______________|_______________________|_______________________|
+1.	|func		|1		|			|Тестируемая функция	|
+________|_______________|_______________|_______________________|_______________________|
+func - 
+Некоторая функция.
+
+
+Метод case -
+Метод создания кейса тестирования.
+№	|Имя аргумента	|Позиция	|Стандартное значение	|Назначение		|
+________|_______________|_______________|_______________________|_______________________|
+1.	|inputData	|1		|(0, {})		|Аргументы функции для 	|
+	|		|		|			|кейса тестирования	|
+________|_______________|_______________|_______________________|_______________________|
+2.	|outputData	|2		|0			|Результат правильной 	|
+	|		|		|			|работы функции при 	|
+	|		|		|			|заданых аргументах	|
+________|_______________|_______________|_______________________|_______________________|
+3.	|sep		|sep		|0			|Позиция кейса в списе	|
+	|		|		|			|кейсов тестирования 	|
+	|		|		|			|(обратно порядку 	|
+	|		|		|			|выполнения)		|
+________|_______________|_______________|_______________________|_______________________|
+inputData - 
+Список или кортеж, последний элемент которого - словарь ключевых аргументов.
+sep -
+Целое число типа int.
+
+
+Метод todo - 
+Метод для тестирования по кейсам теста.
+№	|Имя аргумента	|Позиция	|Стандартное значение	|Назначение		|
+________|_______________|_______________|_______________________|_______________________|
+0.	|		|		|			|			|
+________|_______________|_______________|_______________________|_______________________|
+
+
+
+Общий пример:
+
+>>> from easytest import *
+>>>
+>>> mytest = test(myfunc)
+>>> 
+>>> mytest.case((*args0, keyargs0), expectedResult0)
+>>> mytest.case((*args1, keyargs1), expectedResult1)
+>>> mytest.case((*args2, keyargs2), expectedResult2, sep = 1)
+>>> 
+>>> mytest.todo()
+OK    :input:*args1, keyargs1: :result:result1: :output:expectedResult1:
+OK    :input:*args2, keyargs2: :result:result2: :output:expectedResult2:
+OK    :input:*args0, keyargs0: :result:result0: :output:expectedResult0:
+>>> 
+
+
+
+Реальные примеры:
+
+>>> def X2(value, *skipArgs, **skipKeyargs):
+	errorTest = type(value) not in {int, float, str}
+	if not errorTest:
+		return value * 2
+
+	
+>>> 
+>>> from easytest import *
+>>> 
+>>> mytest = test(X2)
+>>> 
+>>> mytest.case((13.43, {}), 26.86)
+>>> mytest.case(('mYsUpErStR', {}), 'mYsUpErStRmYsUpErStR')
+>>> mytest.case(([123, '123'], {}), None, sep = 1)
+>>> 
+>>> mytest.todo()
+OK    :input:('mYsUpErStR', {}): :result:mYsUpErStRmYsUpErStR: :output:mYsUpErStRmYsUpErStR:
+OK    :input:([123, '123'], {}): :result:None: :output:None:
+OK    :input:(13.43, {}): :result:26.86: :output:26.86:
+
+
+
+>>> def getitem(*values, key = 1, **skipKeyargs):
+	errorTest = type(key) != int
+	if not errorTest:
+		return values[key]
+
+	
+>>> mylist = [123, 13.43, 'qwertypassword', {'y' : True, 'n' : False}, (1, 2, 4, 1, 4, 3)]
+>>> 
+>>> from easytest import *
+>>> 
+>>> mytest = test(getitem)
+>>> 
+>>> for key in range(len(mylist)):
+	mytest.case((*mylist, {'key' : key}), mylist[key], sep = -1)
+
+	
+>>> mytest.case((*mylist, {'key' : 13.43}), None)
+>>> 
+>>> mytest.todo()
+OK    :input:(123, 13.43, 'qwertypassword', {'y': True, 'n': False}, (1, 2, 4, 1, 4, 3), {'key': 13.43}): :result:None: :output:None:
+OK    :input:(123, 13.43, 'qwertypassword', {'y': True, 'n': False}, (1, 2, 4, 1, 4, 3), {'key': 1}): :result:13.43: :output:13.43:
+OK    :input:(123, 13.43, 'qwertypassword', {'y': True, 'n': False}, (1, 2, 4, 1, 4, 3), {'key': 2}): :result:qwertypassword: :output:qwertypassword:
+OK    :input:(123, 13.43, 'qwertypassword', {'y': True, 'n': False}, (1, 2, 4, 1, 4, 3), {'key': 3}): :result:{'y': True, 'n': False}: :output:{'y': True, 'n': False}:
+OK    :input:(123, 13.43, 'qwertypassword', {'y': True, 'n': False}, (1, 2, 4, 1, 4, 3), {'key': 4}): :result:(1, 2, 4, 1, 4, 3): :output:(1, 2, 4, 1, 4, 3):
+OK    :input:(123, 13.43, 'qwertypassword', {'y': True, 'n': False}, (1, 2, 4, 1, 4, 3), {'key': 0}): :result:123: :output:123:
+>>> 
