@@ -1,10 +1,12 @@
-Основной класс - test. Экземпляр класса test - объект объединяющий кейсы тестирования одной функции. Кейс тестирования не является объектом инкапсулирующим методы , а является набором входных и верных выходных данных функции.
+none - функция, возвращает None. Применяется как пример простейшей функции.
+
+test - основной класс. Экземпляр класса test - объект объединяющий кейсы тестирования одной функции. Кейс тестирования не является объектом инкапсулирующим методы , а является набором входных и верных выходных данных функции.
 
 Метод __init__ -
 Метод для инициализации нового теста.
 №	|Имя аргумента	|Позиция	|Стандартное значение	|Назначение		|
 ________|_______________|_______________|_______________________|_______________________|
-1.	|func		|1		|NO			|Тестируемая функция	|
+1.	|func		|1		|none			|Тестируемая функция	|
 ________|_______________|_______________|_______________________|_______________________|
 func - 
 Некоторая функция типа function.
@@ -14,16 +16,16 @@ func -
 Метод создания кейса тестирования.
 №	|Имя аргумента	|Позиция	|Стандартное значение	|Назначение		|
 ________|_______________|_______________|_______________________|_______________________|
-1.	|inputData	|1		|(0, {})		|Аргументы функции для 	|
+1.	|inputData	|1		|(None, {})		|Аргументы функции для 	|
 	|		|		|			|кейса тестирования	|
 ________|_______________|_______________|_______________________|_______________________|
-2.	|outputData	|2		|0			|Результат правильной 	|
+2.	|outputData	|2		|None			|Результат правильной 	|
 	|		|		|			|работы функции при 	|
 	|		|		|			|заданых аргументах	|
 ________|_______________|_______________|_______________________|_______________________|
-3.	|sep		|sep		|0			|Позиция кейса в списке	|
+3.	|key		|key		|-1			|Адрес кейса в списке	|
 	|		|		|			|кейсов тестирования 	|
-	|		|		|			|(обратно порядку 	|
+	|		|		|			|(соответствует порядку |
 	|		|		|			|выполнения)		|
 ________|_______________|_______________|_______________________|_______________________|
 inputData - 
@@ -41,26 +43,7 @@ ________|_______________|_______________|_______________________|_______________
 
 
 
-Общий пример:
-
->>> from easytest import *
->>>
->>> mytest = test(myfunc)
->>> 
->>> mytest.case((*args0, keyargs0), expectedResult0)
->>> mytest.case((*args1, keyargs1), expectedResult1)
->>> mytest.case((*args2, keyargs2), expectedResult2, sep = 1)
->>> 
->>> mytest.todo()
-OK    :input:*args1, keyargs1: :result:result1: :output:expectedResult1:
-OK    :input:*args2, keyargs2: :result:result2: :output:expectedResult2:
-OK    :input:*args0, keyargs0: :result:result0: :output:expectedResult0:
->>> 
-
-
-
-Реальные примеры:
-
+Примеры:
 >>> def X2(value, *skipArgs, **skipKeyargs):
 	errorTest = type(value) not in {int, float, str}
 	if not errorTest:
@@ -70,42 +53,290 @@ OK    :input:*args0, keyargs0: :result:result0: :output:expectedResult0:
 >>> 
 >>> from easytest import *
 >>> 
->>> mytest = test(X2)
+>>> x2test = test(X2)
 >>> 
->>> mytest.case((13.43, {}), 26.86)
->>> mytest.case(('mYsUpErStR', {}), 'mYsUpErStRmYsUpErStR')
->>> mytest.case(([123, '123'], {}), None, sep = 1)
+>>> x2test.case((2, {}), 5)
+>>> x2test.case((2, {}), 4)
+>>> x2test.case((17.8, {}), 35.6)
+>>> x2test.case(('qwertypassword', {}), 'qwertypassword' * 2)
+>>> x2test.case(('trash', 'trash', {'trash' : 'trash'}), 'trash' * 2, key = 0)
+>>> x2test.case((['list', 'is', 'cool'], {}), None)
+>>> x2test.case((True, {}), None)
 >>> 
->>> mytest.todo()
-OK    :input:('mYsUpErStR', {}): :result:mYsUpErStRmYsUpErStR: :output:mYsUpErStRmYsUpErStR:
-OK    :input:([123, '123'], {}): :result:None: :output:None:
-OK    :input:(13.43, {}): :result:26.86: :output:26.86:
+>>> x2test.todo()
+OK
+input:('trash', 'trash', {'trash': 'trash'})
+result:trashtrash
+FAIL
+input:(2, {})
+result:4
+output:5
+OK
+input:(2, {})
+result:4
+OK
+input:(17.8, {})
+result:35.6
+OK
+input:('qwertypassword', {})
+result:qwertypasswordqwertypassword
+OK
+input:(['list', 'is', 'cool'], {})
+result:None
+OK
+input:(True, {})
+result:None
+>>> 
 
 
 
->>> def getitem(*values, key = 1, **skipKeyargs):
+>>> def getitem(*values, key = 0, **skipKeyargs):
 	errorTest = type(key) != int
 	if not errorTest:
 		return values[key]
 
 	
->>> mylist = [123, 13.43, 'qwertypassword', {'y' : True, 'n' : False}, (1, 2, 4, 1, 4, 3)]
 >>> 
 >>> from easytest import *
 >>> 
->>> mytest = test(getitem)
+>>> getitem_test = test(getitem)
 >>> 
+>>> mylist = [0, 1, 17.8, {'a' : 1}, 'qwertypassword']
 >>> for key in range(len(mylist)):
-	mytest.case((*mylist, {'key' : key}), mylist[key], sep = -1)
+	getitem_test.case((*mylist, {'key' : key}), mylist[key])
 
 	
->>> mytest.case((*mylist, {'key' : 13.43}), None)
+>>> getitem_test.case((*mylist, {'key' : '123'}), None)
 >>> 
+>>> getitem_test.todo()
+OK
+input:(0, 1, 17.8, {'a': 1}, 'qwertypassword', {'key': 0})
+result:0
+OK
+input:(0, 1, 17.8, {'a': 1}, 'qwertypassword', {'key': 1})
+result:1
+OK
+input:(0, 1, 17.8, {'a': 1}, 'qwertypassword', {'key': 2})
+result:17.8
+OK
+input:(0, 1, 17.8, {'a': 1}, 'qwertypassword', {'key': 3})
+result:{'a': 1}
+OK
+input:(0, 1, 17.8, {'a': 1}, 'qwertypassword', {'key': 4})
+result:qwertypassword
+OK
+input:(0, 1, 17.8, {'a': 1}, 'qwertypassword', {'key': '123'})
+result:None
+>>> 
+
+
+
+>>> def SUM(n = 1, *skipArgs, unevenFlag = False, **skipKeyargs):
+	errorTest1 = type(n) != int
+	errorTest2 = n < 1
+	if (not errorTest1) and (not errorTest2):
+		if not unevenFlag:
+			return ((n + 1) * n) / 2
+		else:
+			return ((n + 1) / 2) ** 2
+
+		
+>>> 
+>>> from easytest import *
+>>> 
+>>> mytest = test(SUM)
+>>> 
+>>> for n in range(1, 21):
+	mytest.case((n, {}), ((n + 1) * n) / 2)
+
+	
+>>> for n in range(1, 21):
+	mytest.case((n, {'unevenFlag' : True}), ((n + 1) / 2) ** 2)
+
+	
+>>> for n in range(0, -20, -1):
+	mytest.case((n, {'unevenFlag' : n % 2}), None)
+
+	
 >>> mytest.todo()
-OK    :input:(123, 13.43, 'qwertypassword', {'y': True, 'n': False}, (1, 2, 4, 1, 4, 3), {'key': 13.43}): :result:None: :output:None:
-OK    :input:(123, 13.43, 'qwertypassword', {'y': True, 'n': False}, (1, 2, 4, 1, 4, 3), {'key': 1}): :result:13.43: :output:13.43:
-OK    :input:(123, 13.43, 'qwertypassword', {'y': True, 'n': False}, (1, 2, 4, 1, 4, 3), {'key': 2}): :result:qwertypassword: :output:qwertypassword:
-OK    :input:(123, 13.43, 'qwertypassword', {'y': True, 'n': False}, (1, 2, 4, 1, 4, 3), {'key': 3}): :result:{'y': True, 'n': False}: :output:{'y': True, 'n': False}:
-OK    :input:(123, 13.43, 'qwertypassword', {'y': True, 'n': False}, (1, 2, 4, 1, 4, 3), {'key': 4}): :result:(1, 2, 4, 1, 4, 3): :output:(1, 2, 4, 1, 4, 3):
-OK    :input:(123, 13.43, 'qwertypassword', {'y': True, 'n': False}, (1, 2, 4, 1, 4, 3), {'key': 0}): :result:123: :output:123:
+OK
+input:(1, {})
+result:1.0
+OK
+input:(2, {})
+result:3.0
+OK
+input:(3, {})
+result:6.0
+OK
+input:(4, {})
+result:10.0
+OK
+input:(5, {})
+result:15.0
+OK
+input:(6, {})
+result:21.0
+OK
+input:(7, {})
+result:28.0
+OK
+input:(8, {})
+result:36.0
+OK
+input:(9, {})
+result:45.0
+OK
+input:(10, {})
+result:55.0
+OK
+input:(11, {})
+result:66.0
+OK
+input:(12, {})
+result:78.0
+OK
+input:(13, {})
+result:91.0
+OK
+input:(14, {})
+result:105.0
+OK
+input:(15, {})
+result:120.0
+OK
+input:(16, {})
+result:136.0
+OK
+input:(17, {})
+result:153.0
+OK
+input:(18, {})
+result:171.0
+OK
+input:(19, {})
+result:190.0
+OK
+input:(20, {})
+result:210.0
+OK
+input:(1, {'unevenFlag': True})
+result:1.0
+OK
+input:(2, {'unevenFlag': True})
+result:2.25
+OK
+input:(3, {'unevenFlag': True})
+result:4.0
+OK
+input:(4, {'unevenFlag': True})
+result:6.25
+OK
+input:(5, {'unevenFlag': True})
+result:9.0
+OK
+input:(6, {'unevenFlag': True})
+result:12.25
+OK
+input:(7, {'unevenFlag': True})
+result:16.0
+OK
+input:(8, {'unevenFlag': True})
+result:20.25
+OK
+input:(9, {'unevenFlag': True})
+result:25.0
+OK
+input:(10, {'unevenFlag': True})
+result:30.25
+OK
+input:(11, {'unevenFlag': True})
+result:36.0
+OK
+input:(12, {'unevenFlag': True})
+result:42.25
+OK
+input:(13, {'unevenFlag': True})
+result:49.0
+OK
+input:(14, {'unevenFlag': True})
+result:56.25
+OK
+input:(15, {'unevenFlag': True})
+result:64.0
+OK
+input:(16, {'unevenFlag': True})
+result:72.25
+OK
+input:(17, {'unevenFlag': True})
+result:81.0
+OK
+input:(18, {'unevenFlag': True})
+result:90.25
+OK
+input:(19, {'unevenFlag': True})
+result:100.0
+OK
+input:(20, {'unevenFlag': True})
+result:110.25
+OK
+input:(0, {'unevenFlag': 0})
+result:None
+OK
+input:(-1, {'unevenFlag': 1})
+result:None
+OK
+input:(-2, {'unevenFlag': 0})
+result:None
+OK
+input:(-3, {'unevenFlag': 1})
+result:None
+OK
+input:(-4, {'unevenFlag': 0})
+result:None
+OK
+input:(-5, {'unevenFlag': 1})
+result:None
+OK
+input:(-6, {'unevenFlag': 0})
+result:None
+OK
+input:(-7, {'unevenFlag': 1})
+result:None
+OK
+input:(-8, {'unevenFlag': 0})
+result:None
+OK
+input:(-9, {'unevenFlag': 1})
+result:None
+OK
+input:(-10, {'unevenFlag': 0})
+result:None
+OK
+input:(-11, {'unevenFlag': 1})
+result:None
+OK
+input:(-12, {'unevenFlag': 0})
+result:None
+OK
+input:(-13, {'unevenFlag': 1})
+result:None
+OK
+input:(-14, {'unevenFlag': 0})
+result:None
+OK
+input:(-15, {'unevenFlag': 1})
+result:None
+OK
+input:(-16, {'unevenFlag': 0})
+result:None
+OK
+input:(-17, {'unevenFlag': 1})
+result:None
+OK
+input:(-18, {'unevenFlag': 0})
+result:None
+OK
+input:(-19, {'unevenFlag': 1})
+result:None
 >>> 

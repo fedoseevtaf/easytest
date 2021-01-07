@@ -2,18 +2,24 @@
 
 
 # Функция - пример объекта класса function
-def none(*args, **keyargs):
+def none(*skipArgs, **skipKeyargs):
     return None
+
+def normalizeIndex(index, length):
+    if index < 0:
+        return length + index + (index < 0)
+    else:
+        return index
 
 
 # Класс нужен для объединения кейсов тестированя в один объект
 class test():
     
     # Метод используется для создания нового набота кейсов тестирования функции
-    def __init__(self, func, *skipArgs , **skipKeyargs):
+    def __init__(self, func = none, *skipArgs , **skipKeyargs):
         
         # Для защиты от некорректных аргументов функция обёрнута в тесты типов
-        errorTest1 = type(func) != type(none)
+        errorTest1 = type(func) not in {type(none), type(sum)}
         if not errorTest1:
 
             # Чистая функция создания нового теста
@@ -26,22 +32,22 @@ class test():
             
 
     # Метод используется для добавления кейса тестирования
-    def case(self, inputData = (0, {}), outputData = 0, *skipArgs, sep = 0, **skipKeyargs):
+    def case(self, inputData = (None, {}), outputData = None, *skipArgs, key = -1, **skipKeyargs):
         
         # Для защиты от некорректных аргументов функция обёрнута в тесты
         errorTest1 = type(inputData) not in {tuple, list}
-        errorTest2 = type(sep) != (int)
+        errorTest2 = type(key) != (int)
         if (not errorTest1) and (not errorTest2):
 
             # Чистая функция создания кейса тестирования
-            testcase(self, inputData, outputData, sep)
+            testcase(self, inputData, outputData, key)
 
         # Вызов ошибок при некорректных аргументах
         elif errorTest1:
             errorMessage = 'Type of case input data is not tuple or list!'
             raise TypeError(errorMessage)
         elif errorTest2:
-            errorMessage = 'Type of separator is not int!'
+            errorMessage = 'Type of key is not int!'
             raise TypeError(errorMessage)
             
     # Метод для выполнения кейсов тестирования из теста
@@ -67,9 +73,11 @@ def test__init__(self, func):
     self.output = []
 
 
-def testcase(self, inputData, outputData, sep):
-    self.input.insert(sep, inputData)
-    self.output.insert(sep, outputData)
+def testcase(self, inputData, outputData, key):
+    key = normalizeIndex(key, len(self.input))
+    
+    self.input.insert(key, inputData)
+    self.output.insert(key, outputData)
 
 
 def testtodo(self):
@@ -82,10 +90,10 @@ def testtodo(self):
         try:
             assert result == self.output[key]
 
-            message = ':input:{}: :result:{}: :output:{}:'.format(self.input[key], result, self.output[key])
-            print('OK    {}'.format(message))
+            message = ('OK\ninput:{}\nresult:{}'.format(self.input[key], result))
+            print(message)
 
         except:
-            errorMessage = ':input:{}: :result:{}: :output:{}:'.format(self.input[key], result, self.output[key])
-            print('FAIL    {}}'.format(errorMessage))
+            errorMessage = 'FAIL\ninput:{}\nresult:{}\noutput:{}'.format(self.input[key], result, self.output[key])
+            print(errorMessage)
         
